@@ -1,0 +1,24 @@
+#!/usr/bin/env python3
+
+if __name__ == "__main__":
+  import logging
+  import os, sys;
+  from datetime import datetime
+
+  from data_downloading import log
+
+  logFile = os.path.join( os.path.expanduser('~'), 'logs', 'ERA5', 'ITCZ_Download.log' )
+  if not os.path.isdir( os.path.dirname( logFile ) ):
+    os.makedirs( os.path.dirname( logFile ) )
+
+  fhand   = logging.FileHandler( logFile, mode = 'w' )
+  fhand.setLevel( logging.DEBUG )
+  fhand.setFormatter( logging.Formatter( '%(asctime)s %(levelname)-.6s %(funcName)s %(message)s' ) )
+  log.addHandler(fhand)
+
+  from data_downloading.ECMWF.ERA5.ITCZ.downloadITCZData import downloadITCZData as downloadData
+
+  startDate = datetime(1979, 1, 1, 0)
+  endDate   = datetime.utcnow()
+  endDate   = datetime(endDate.year, endDate.month, 1, 0)
+  downloadData( startDate, endDate, delete = len(sys.argv) == 2 )
