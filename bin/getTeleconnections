@@ -1,0 +1,31 @@
+#!/usr/bin/env python3
+
+if __name__ == "__main__":
+  import argparse
+
+  from data_downloading import log
+  from data_downloading.teleconnections import getENSO, getPDO
+
+
+  parser = argparse.ArgumentParser()
+  parser.add_argument('outRoot',    type=str, 
+    help='Top-level directory for downloaded files')
+  parser.add_argument('telecon',    type=str, choices=['ENSO', 'PDO', 'ALL'],
+    help="The teleconnection to get; ALL will download all of them.")
+  parser.add_argument('--loglevel', type=int, 
+    help='Set logging level')
+  parser.add_argument('--overwrite', action='store_true', 
+    help='Set to overwrite existing data')
+
+  args = parser.parse_args()
+  if args.loglevel:
+    log.handlers[0].setLevel( args.loglevel)
+
+  args.telecon = args.telecon.upper()
+
+  if args.telecon == 'ENSO' or args.telecon == 'ALL':
+    getENSO(args.outRoot)
+
+  if args.telecon == 'PDO' or args.telecon == 'ALL':
+    getPDO(args.outRoot, clobber = args.overwrite)
+  

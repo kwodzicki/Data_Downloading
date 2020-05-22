@@ -21,5 +21,6 @@ if __name__ == "__main__":
   sdate = datetime.strptime(args.start, '%Y%m') if args.start else None
   edate = datetime.strptime(args.end,   '%Y%m') if args.end   else None
 
-  getERSST(args.outRoot, version=args.version, startDate=sdate, endDate=edate)
+  getERSST(args.outRoot, version=args.version, 
+    startDate=sdate, endDate=edate, overwrite = args.overwrite)
   

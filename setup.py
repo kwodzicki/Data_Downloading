@@ -14,7 +14,7 @@ setup(
   author_email     = "wodzicki@tamu.edu",
   version          = main_ns['__version__'],
   packages         = setuptools.find_packages(),
-  install_requires = [ "bs4", "lxml", "ecmwfapi"],
+  install_requires = [ "bs4", "lxml", "ecmwfapi", "netCDF4" ],
   scripts          = [],
   zip_safe         = False,
 );
