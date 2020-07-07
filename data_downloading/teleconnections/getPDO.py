@@ -12,7 +12,7 @@ from . import getOutDir, URLS
 INFO    = URLS['PDO']['info']
 URL     = URLS['PDO']['data']
 DATEFMT = '%Y%m'
-SCALE   = 1.0e-2
+SCALE   = np.float32(1.0e-2)
 
 def getPDO(outRoot, **kwargs):
   """
@@ -76,8 +76,8 @@ def getPDO(outRoot, **kwargs):
   vid.units         = 'arbitrary'
   vid.description   = data['description']['title']
   vid.scale_factor  = SCALE																										# Set scaling
-  vid.add_offset    = 0.0																											# Set offset; no ofset
-  vid.missing_value = data['description']['missing'] / SCALE									# Set missing value; must scale the value
+  vid.add_offset    = np.float32(0.0)																					# Set offset; no ofset
+  vid.missing_value = (data['description']['missing']/SCALE).astype(np.int16)	# Set missing value; must scale the value
   vid[:]            = vals																										# Write values; will apply scaling automatically
   
   oid.close()																																	# Close file
