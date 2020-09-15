@@ -1,5 +1,5 @@
 import logging
-import os
+import os, time
 from threading import Thread, BoundedSemaphore, Semaphore, Lock
 from urllib.request import urlopen
 from bs4 import BeautifulSoup as BS
@@ -9,6 +9,13 @@ HOME  = os.path.expanduser('~')
 
 SEMA  = BoundedSemaphore()
 LOCK  = Lock()
+
+def rateFMT( num, suffix='B'):
+ for unit in ['','K','M','G','T','P','E','Z']:
+   if abs(num) < 1024.0:
+     return "{:3.1f}{}{}/s".format(num, unit, suffix)
+   num /= 1024.0
+ return "{:.1f}{}{}/s".format(num, 'Y', suffix);
 
 def updateThreads(threads):
   if not isinstance(threads, int) or threads < 1:
@@ -127,7 +134,7 @@ class URLDownloader:
       bool: True if download success, False otherwise.
 
     """
-
+    t0     = time.time()
     dlSize = 0																																# Size of downloaded data
     os.makedirs( os.path.dirname(fPath), exist_ok = True )										# Make directory path
     with open(fPath, 'wb') as fid:																						# Open local file in binary write
@@ -137,7 +144,8 @@ class URLDownloader:
         data = self.read( blocksize )																					# Read another chunk from remote
 
     if self.checkSize(dlSize):																								# If dlSize matches the remote size, then we got all the data
-      self.log.info('Download successful : {}'.format(self.url))							# Log some info
+      dlr = rateFMT( dlSize / (time.time()-t0) )
+      self.log.info('Downloaded : {} at {}'.format(self.url, dlr))		    # Log some info
       return True																															# Return True
     return False																															# If got here, something failed, return False
 
