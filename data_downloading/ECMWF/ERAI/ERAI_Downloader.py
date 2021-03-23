@@ -194,7 +194,26 @@ class ERAI_Downloader( object ):
     if self.startDate and self.info.get('type','') and self.info.get('levtype',''):
       tmp = [self.info['type'], self.info['levtype'], 
              self.startDate.strftime('%Y%m')]
-      return '_'.join(tmp)+'.nc'
+      baseName = '_'.join(tmp)+'.nc'
+      dirs     = [ self.info['grid'].replace('/', 'x') ]
+      if self.info['levtype'] == 'ml':
+        dirs.append( 'model' )
+      elif self.info['levtype'] == 'pl':
+        dirs.append( 'pressure')
+      elif self.info['levtype'] == 'sfc':
+        dirs.append( 'single' )
+      elif self.info['levtype'] == 'pv':
+        dirs.append( 'potential_vorticity')
+      elif self.info['levtype'] == 'pt':
+        dirs.append( 'isentropic' )
+      elif self.info['levtype'] == 'dp':
+        dirs.append( 'depth' )
+      else:
+        raise Exception( 'Unrecognized levtype: {}'.format(self.info['levtype']) )
+      dirs.append('netcdf')
+      date = self.info['date'].split('-')
+      dirs.extend( [date[0], ''.join(date[:2] ) ] )
+      return os.path.join( *dirs, baseName )
     return ''
 
   ##############################################################################
@@ -245,18 +264,9 @@ class ERAI_Downloader( object ):
     Set the date for downloading.
 
     Arguments:
-      sYear  : The starting year of the download.
-      sMonth : The starting month of the download.
-      sDay   : The starting day of the download.
-      eYear  : The ending year of the download.
-      eMonth : The ending month of the download.
-      eDay   : The ending day of the download.
+      sdate (datetime): The starting datetime of the download.
+      edate (datetime): The ending datetime of the download.
 
-    Note:
-      If sYear and sMonth are NOT set, then the begging of the ERA-I record 
-      (1979-01-01) is used. If the eYear and eMonth are NOT set, then the
-      starting year and month are used. sDay defaults to 1 and eDay defaults
-      to the number of days in the month.
 
     """
 
