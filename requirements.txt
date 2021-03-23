@@ -1,0 +1,7 @@
+numpy
+netCDF4
+pydap
+requests
+certifi
+lxml
+git+https://github.com/kwodzicki/idlpy
