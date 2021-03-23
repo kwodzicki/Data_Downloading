@@ -189,12 +189,25 @@ class ERAI_Downloader( object ):
         exist = True;                                                           # Set exits to True
     return exist;                                                               # Return exist
 
+  def _parseStartDate(self):
+    """
+    Parse a date string
+    """
+    date = self.info['date'].split('/')[0]
+    try:
+      return datetime.strptime(date, '%Y-%m-%d')
+    except:
+      pass
+    try:
+      return datetime.strptime(date, '%Y-%m')
+    except:
+      raise Exception('Failed to parse starting date') 
+   
   ##############################################################################
   def defaultTarget(self):
     if self.startDate and self.info.get('type','') and self.info.get('levtype',''):
-      tmp = [self.info['type'], self.info['levtype'], 
-             self.startDate.strftime('%Y%m')]
-      baseName = '_'.join(tmp)+'.nc'
+      date     = self._parseStartDate()
+      baseName = date.strftime('%Y%m%dT%H%M%SZ.nc')
       dirs     = [ self.info['grid'].replace('/', 'x') ]
       if self.info['levtype'] == 'ml':
         dirs.append( 'model' )
@@ -211,8 +224,7 @@ class ERAI_Downloader( object ):
       else:
         raise Exception( 'Unrecognized levtype: {}'.format(self.info['levtype']) )
       dirs.append('netcdf')
-      date = self.info['date'].split('-')
-      dirs.extend( [date[0], ''.join(date[:2] ) ] )
+      dirs.extend( [date.strftime('%Y'), date.strftime('%Y%m')] )
       return os.path.join( *dirs, baseName )
     return ''
 
